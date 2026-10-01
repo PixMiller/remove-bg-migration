@@ -1,0 +1,39 @@
+name: Migration problem
+description: Something in this kit doesn't match how the API behaves, or a migration step fails.
+labels: [migration]
+body:
+  - type: markdown
+    attributes:
+      value: |
+        **Never paste your API key.** Replace it with `***`.
+  - type: dropdown
+    id: client
+    attributes:
+      label: How do you call the API?
+      options:
+        - Own HTTP code (curl, requests, fetch, …)
+        - PyPI removebg
+        - npm remove.bg
+        - removebg-cli
+        - Another library
+        - No-code tool (Zapier, Make, n8n, …)
+    validations:
+      required: true
+  - type: textarea
+    id: request
+    attributes:
+      label: Request
+      description: Endpoint, parameters (size, format, …) and how the image is sent.
+    validations:
+      required: true
+  - type: textarea
+    id: response
+    attributes:
+      label: Response
+      description: Status code, the errors[0] code/title, and relevant X-* headers.
+    validations:
+      required: true
+  - type: textarea
+    id: expected
+    attributes:
+      label: What you expected (and what remove.bg did)

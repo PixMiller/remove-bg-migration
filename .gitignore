@@ -1,0 +1,8 @@
+.DS_Store
+out.png
+preview.png
+*_no_bg.png
+removebg-errors.log
+__pycache__/
+node_modules/
+*.mp4

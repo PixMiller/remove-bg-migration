@@ -1,0 +1,5 @@
+blank_issues_enabled: true
+contact_links:
+  - name: Billing, invoices or a higher rate limit
+    url: https://pixmiller.com/en/contact/?utm_source=github&utm_medium=referral&utm_campaign=removebg-migration&utm_content=issue_template
+    about: Account and billing questions are handled by PixMiller support, not in this repo.

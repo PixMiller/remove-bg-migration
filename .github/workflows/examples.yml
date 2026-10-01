@@ -1,0 +1,65 @@
+name: Examples
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  examples:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - uses: actions/setup-python@v7
+        with:
+          python-version: "3.12"
+      - uses: actions/setup-node@v7
+        with:
+          node-version: "22"
+      - uses: actions/setup-go@v7
+        with:
+          go-version: "1.22"
+      - uses: actions/setup-java@v6
+        with:
+          distribution: temurin
+          java-version: "21"
+      - name: Install Python dependencies
+        run: pip install requests removebg
+      - name: Run every example against the contract stub
+        run: ./tests/run-examples.sh
+
+  lint:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v7
+      - name: shellcheck
+        run: shellcheck scripts/*.sh examples/curl/*.sh tests/*.sh skills/remove-bg-migration/scripts/*.sh
+      - name: Skill scripts match the repo scripts
+        run: |
+          diff scripts/find-removebg-usages.sh skills/remove-bg-migration/scripts/find-removebg-usages.sh
+          diff scripts/verify-key.sh skills/remove-bg-migration/scripts/verify-key.sh
+      - name: JSON manifests parse
+        run: |
+          python3 -m json.tool .claude-plugin/marketplace.json > /dev/null
+          python3 -m json.tool .claude-plugin/plugin.json > /dev/null
+      - name: Relative links resolve
+        run: |
+          python3 - <<'PY'
+          import pathlib, re, sys
+          bad = []
+          for f in pathlib.Path(".").rglob("*.md"):
+              if any(p in f.parts for p in (".git", "node_modules")):
+                  continue
+              for target in re.findall(r"\]\(([^)\s]+)\)", f.read_text()):
+                  if target.startswith(("http", "#", "mailto:")):
+                      continue
+                  path = target.split("#")[0]
+                  if path and not (f.parent / path).exists():
+                      bad.append(f"{f}: {target}")
+          print("\n".join(bad) or "all relative links resolve")
+          sys.exit(1 if bad else 0)
+          PY

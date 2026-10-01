@@ -1,0 +1,17 @@
+{
+  "name": "pixmiller",
+  "owner": {
+    "name": "PixMiller",
+    "url": "https://pixmiller.com"
+  },
+  "metadata": {
+    "description": "Agent skills from PixMiller"
+  },
+  "plugins": [
+    {
+      "name": "remove-bg-migration",
+      "source": "./",
+      "description": "Migrate remove.bg API integrations to PixMiller's remove.bg-compatible API before remove.bg shuts down on 1 December 2026."
+    }
+  ]
+}

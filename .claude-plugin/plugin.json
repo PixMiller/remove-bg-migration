@@ -1,0 +1,14 @@
+{
+  "name": "remove-bg-migration",
+  "description": "Migrate remove.bg API integrations to PixMiller's remove.bg-compatible API before remove.bg shuts down on 1 December 2026.",
+  "version": "1.0.0",
+  "author": {
+    "name": "PixMiller",
+    "url": "https://pixmiller.com"
+  },
+  "homepage": "https://github.com/PixMiller/remove-bg-migration",
+  "repository": "https://github.com/PixMiller/remove-bg-migration",
+  "license": "MIT",
+  "keywords": ["remove.bg", "removebg", "background-removal", "migration", "pixmiller"],
+  "skills": ["./skills/"]
+}
