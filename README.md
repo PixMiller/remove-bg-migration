@@ -35,7 +35,7 @@ key**. It is not a guaranteed drop-in for remove.bg's official SDKs.
 
 ## What is happening to remove.bg
 
-| | |
+| What | Details |
 |---|---|
 | **1 Dec 2026, 09:00 CET** | The standalone remove.bg website closes. Background removal moves to Canva. |
 | **Self-service API** | Stops accepting requests the same day. remove.bg points users to Leonardo.Ai, whose migration guide requires code changes: a new endpoint, Bearer auth and a JSON request body. |
