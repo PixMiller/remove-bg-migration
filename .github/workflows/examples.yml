@@ -23,6 +23,7 @@ jobs:
       - uses: actions/setup-go@v7
         with:
           go-version: "1.22"
+          cache-dependency-path: examples/go/go.mod
       - uses: actions/setup-java@v6
         with:
           distribution: temurin
