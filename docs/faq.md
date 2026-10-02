@@ -31,13 +31,10 @@ parameters have no effect, and the rate limit is lower. [All differences](migrat
 
 ### Can I call the API from a browser, a Figma plugin or a browser extension?
 
-Yes. `api.pixmiller.com` allows cross-origin calls from any origin, without cookies, and
-exposes the `X-Credits-Charged`, `X-Width`, `X-Height`, `X-Type`, `X-Foreground-*`,
-`X-RateLimit-*` and `Retry-After` headers to your script. Error responses are readable too.
-Do not ship your own key in public front-end code, because anyone can copy it and spend your
-credits. Call through your own backend, or ask each user for their own key (as a Figma
-plugin or extension would). A `fetch` example is in
-[Calling from a browser](migration-guide.md#calling-from-a-browser).
+Yes. CORS is enabled for any origin and no cookies are used. Do not put your own key in public
+front-end code: call through your own backend, or let each user bring their own key, for example
+in a Figma plugin or a browser extension. See
+[Calling from a browser](migration-guide.md#calling-from-a-browser) for details.
 
 ### Why do I get a watermark?
 

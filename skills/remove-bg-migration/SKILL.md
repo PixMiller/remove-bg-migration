@@ -70,8 +70,8 @@ Rules for the key:
 - Read the key from the environment in code.
 - **Browser-side code:** the key must never be hard-coded or bundled into public front-end code
   (anyone can copy it and spend the user's credits). Route the call through the project's own
-  backend, or let each end user enter their own key (BYO-key, as Figma plugins and extensions
-  do). `api.pixmiller.com` allows browser calls (CORS), so no proxy is needed for BYO-key.
+  backend, or let each end user enter their own key (BYO-key, for example in a Figma plugin or
+  a browser extension). `api.pixmiller.com` allows browser calls (CORS), so no proxy is needed for BYO-key.
   Details: [references/api-contract.md](references/api-contract.md#browser-calls-cors).
 
 ### 4. Change the code

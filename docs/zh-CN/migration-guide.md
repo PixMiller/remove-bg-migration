@@ -212,12 +212,13 @@ async function removeBackground(apiKey, file) {
   });
 
   if (!resp.ok) {
-    const { errors } = await resp.json(); // 与 remove.bg 相同的错误信封
-    const retryAfter = resp.headers.get("Retry-After"); // 429 时才有
-    throw Object.assign(new Error(errors[0].title), { code: errors[0].code, retryAfter });
+    const body = await resp.json().catch(() => null); // 网关返回的 502/413 等可能不是 JSON
+    const e = body?.errors?.[0]; // 与 remove.bg 相同的错误信封
+    const retryAfter = resp.headers.get("Retry-After"); // 429 时读取
+    throw Object.assign(new Error(e?.title ?? `HTTP ${resp.status}`), { code: e?.code, retryAfter });
   }
 
-  console.log("charged:", resp.headers.get("X-Credits-Charged")); // "0" 表示拿到的是预览图
+  console.log("charged:", resp.headers.get("X-Credits-Charged")); // `0` 表示免费预览
   return URL.createObjectURL(await resp.blob()); // 可直接作为 <img src>
 }
 ```

@@ -225,12 +225,13 @@ async function removeBackground(apiKey, file) {
   });
 
   if (!resp.ok) {
-    const { errors } = await resp.json(); // same envelope as on remove.bg
-    const retryAfter = resp.headers.get("Retry-After"); // set on 429
-    throw Object.assign(new Error(errors[0].title), { code: errors[0].code, retryAfter });
+    const body = await resp.json().catch(() => null); // a gateway 502/413 may not return JSON
+    const e = body?.errors?.[0]; // same envelope as on remove.bg
+    const retryAfter = resp.headers.get("Retry-After"); // read it on 429
+    throw Object.assign(new Error(e?.title ?? `HTTP ${resp.status}`), { code: e?.code, retryAfter });
   }
 
-  console.log("charged:", resp.headers.get("X-Credits-Charged")); // "0" = you got a preview
+  console.log("charged:", resp.headers.get("X-Credits-Charged")); // "0" = free preview
   return URL.createObjectURL(await resp.blob()); // use as <img src>
 }
 ```
