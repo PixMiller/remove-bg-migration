@@ -25,6 +25,14 @@ remove.bg 表示，未用完的按量点数在关站时作废。退款只按其�
 `200` 和图片字节。三个第三方客户端通过了我们的测试，但我们不承诺每次发版后都保持 SDK 级兼容。默认的 size
 返回带水印的预览图，阴影参数不生效，限速也更低。[查看所有差异](migration-guide.md#差异汇总)。
 
+### 能从浏览器、Figma 插件或浏览器扩展里直接调用吗？
+
+可以。`api.pixmiller.com` 允许任意来源的跨域调用（不使用 cookie），并把 `X-Credits-Charged`、`X-Width`、
+`X-Height`、`X-Type`、`X-Foreground-*`、`X-RateLimit-*` 和 `Retry-After` 响应头暴露给你的脚本，错误响应也能读到。
+不要把你自己的 Key 发布在公开的前端代码里，任何人都能复制它并花掉你的点数。请经你自己的后端调用，或让每个用户填自己的
+Key（Figma 插件、浏览器扩展就是这样做的）。`fetch` 示例见
+[从浏览器调用](migration-guide.md#从浏览器调用)。
+
 ### 为什么我拿到的图带水印？
 
 你没有设置 `size`，或者设成了 `preview`、`small` 或 `regular`。这几个档位在 PixMiller 上免费且带水印。

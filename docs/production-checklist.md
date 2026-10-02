@@ -43,6 +43,10 @@ or a fixed paid tier (`full`, `hd`, `4k`, `medium`, `50MP`). With `auto`, check
 - [ ] **Shadows and semitransparency are not rendered.** If you relied on `add_shadow` for
       car photos, add the shadow yourself.
 - [ ] **`X-Type` is a coarse class** (`person`, `product`, `animal`, `car`, `other`).
+- [ ] **Calling from a browser?** It works (CORS is enabled; see
+      [Calling from a browser](migration-guide.md#calling-from-a-browser)), but never ship your
+      key in public front-end code. Route calls through your backend, or let users enter their
+      own key.
 - [ ] **`402 insufficient_credits`:** alert on it. Also alert on a low balance from
       `GET /v1.0/account`, so paid jobs do not stall.
 

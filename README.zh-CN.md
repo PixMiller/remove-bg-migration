@@ -67,6 +67,8 @@ remove.bg 官方 SDK 原样可用。切换之前，请先看完下面的[差异]
 - `X-Credits-Charged`、`X-Width`、`X-Height`、`X-Type`、`X-Foreground-*`、`X-RateLimit-*`。
 - 错误信封 `{"errors":[{"code","title"}]}`，状态码和错误码都沿用 remove.bg 的。
 - `GET /v1.0/account`，余额在 `data.attributes.credits` 下。
+- 支持浏览器端调用（已开启 CORS，不使用 cookie）。不要把 Key 写进公开的前端代码：请经你自己的后端转发，或让用户自带 Key。
+  见[从浏览器调用](docs/zh-CN/migration-guide.md#从浏览器调用)。
 
 ## 有哪些不一样
 

@@ -29,6 +29,16 @@ image bytes. Three third-party clients passed our tests, but we do not claim SDK
 compatibility release by release. The default size returns a watermarked preview, shadow
 parameters have no effect, and the rate limit is lower. [All differences](migration-guide.md#summary-of-differences).
 
+### Can I call the API from a browser, a Figma plugin or a browser extension?
+
+Yes. `api.pixmiller.com` allows cross-origin calls from any origin, without cookies, and
+exposes the `X-Credits-Charged`, `X-Width`, `X-Height`, `X-Type`, `X-Foreground-*`,
+`X-RateLimit-*` and `Retry-After` headers to your script. Error responses are readable too.
+Do not ship your own key in public front-end code, because anyone can copy it and spend your
+credits. Call through your own backend, or ask each user for their own key (as a Figma
+plugin or extension would). A `fetch` example is in
+[Calling from a browser](migration-guide.md#calling-from-a-browser).
+
 ### Why do I get a watermark?
 
 You did not set `size`, or you set `preview`, `small` or `regular`. Those tiers are free and
