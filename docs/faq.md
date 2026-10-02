@@ -29,6 +29,13 @@ image bytes. Three third-party clients passed our tests, but we do not claim SDK
 compatibility release by release. The default size returns a watermarked preview, shadow
 parameters have no effect, and the rate limit is lower. [All differences](migration-guide.md#summary-of-differences).
 
+### Can I call the API from a browser, a Figma plugin or a browser extension?
+
+Yes. CORS is enabled for any origin and no cookies are used. Do not put your own key in public
+front-end code: call through your own backend, or let each user bring their own key, for example
+in a Figma plugin or a browser extension. See
+[Calling from a browser](migration-guide.md#calling-from-a-browser) for details.
+
 ### Why do I get a watermark?
 
 You did not set `size`, or you set `preview`, `small` or `regular`. Those tiers are free and

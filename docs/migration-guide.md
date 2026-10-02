@@ -17,6 +17,7 @@ if the two ever disagree, the website is the source of truth. Please
 - [Errors](#errors)
 - [Account endpoint](#account-endpoint)
 - [Rate limit](#rate-limit)
+- [Calling from a browser](#calling-from-a-browser)
 - [Credits and billing](#credits-and-billing)
 - [Summary of differences](#summary-of-differences)
 
@@ -193,6 +194,58 @@ Calling `/v1.0/account` is free. It is the safest way to check that a new key wo
   [`examples/python/batch_remove_bg.py`](../examples/python/batch_remove_bg.py) shows a
   batch runner that stays under the limit.
 - Need more? [Contact us](https://pixmiller.com/en/contact/?utm_source=github&utm_medium=referral&utm_campaign=removebg-migration&utm_content=rate_limit).
+
+## Calling from a browser
+
+`https://api.pixmiller.com/v1.0/*` (and `/v1/*`) can be called straight from a web page, a
+browser extension or a plugin sandbox (Figma, Obsidian and similar):
+
+- **Any `Origin` is allowed, and cookies are not used.** Authentication is only the
+  `X-Api-Key` header, so do not send `credentials: "include"`.
+- The preflight (`OPTIONS`) allows `GET` and `POST`, and the request headers `x-api-key`,
+  `content-type` and `accept`. That covers multipart uploads, JSON bodies, the
+  `Accept: application/json` envelope and `GET /v1.0/account`.
+- The response headers are readable through `resp.headers.get(...)`: `X-Credits-Charged`,
+  `X-Width`, `X-Height`, `X-Type`, `X-Foreground-Top` / `-Left` / `-Width` / `-Height`,
+  `X-RateLimit-Limit` / `-Remaining` / `-Reset` and `Retry-After`.
+- Error responses (`400`, `402`, `403`, `429`, …) carry the same CORS headers, so a page can
+  read `errors[0].code`.
+
+```js
+// Browser: `apiKey` comes from the user (see the warning below); `file` is a File from <input type="file">.
+async function removeBackground(apiKey, file) {
+  const form = new FormData();
+  form.append("image_file", file);
+  form.append("size", "auto");
+
+  const resp = await fetch("https://api.pixmiller.com/v1.0/removebg", {
+    method: "POST",
+    headers: { "X-Api-Key": apiKey }, // do not set Content-Type: the browser adds the multipart boundary
+    body: form,
+  });
+
+  if (!resp.ok) {
+    const body = await resp.json().catch(() => null); // a gateway 502/413 may not return JSON
+    const e = body?.errors?.[0]; // same envelope as on remove.bg
+    const retryAfter = resp.headers.get("Retry-After"); // read it on 429
+    throw Object.assign(new Error(e?.title ?? `HTTP ${resp.status}`), { code: e?.code, retryAfter });
+  }
+
+  console.log("charged:", resp.headers.get("X-Credits-Charged")); // "0" = free preview
+  return URL.createObjectURL(await resp.blob()); // use as <img src>
+}
+```
+
+> [!WARNING]
+> **Do not put your API key in public front-end code.** Anything shipped to a browser (a web
+> page, a front-end bundle in a public repository) can be read by every visitor, and anyone
+> who copies the key can spend your credits. Use one of these instead:
+>
+> - **Your own backend.** The browser calls your server, and your server calls PixMiller with
+>   the key from an environment variable or secret store. Use this for any public site or app.
+> - **Bring your own key (BYO-key).** The user pastes their own PixMiller key into your Figma
+>   plugin, browser extension or desktop plugin, and you keep it in that tool's local storage.
+>   Each user spends their own credits, and nothing of yours is exposed.
 
 ## Credits and billing
 

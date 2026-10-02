@@ -18,6 +18,7 @@
 - [错误](#错误)
 - [账户端点](#账户端点)
 - [限速](#限速)
+- [从浏览器调用](#从浏览器调用)
 - [点数与计费](#点数与计费)
 - [差异汇总](#差异汇总)
 
@@ -182,6 +183,54 @@ curl "https://api.pixmiller.com/v1.0/account" -H "X-Api-Key: PIXMILLER_KEY"
 - 收到 `429 rate_limit_exceeded` 时，等待 `Retry-After` 给出的秒数后重试。
   [`examples/python/batch_remove_bg.py`](../../examples/python/batch_remove_bg.py) 演示了一个不超限速的批量处理脚本。
 - 需要更高限额？[联系我们](https://pixmiller.com/zh-hans/contact/?utm_source=github&utm_medium=referral&utm_campaign=removebg-migration&utm_content=rate_limit_zh)。
+
+## 从浏览器调用
+
+`https://api.pixmiller.com/v1.0/*`（以及 `/v1/*`）可以直接在网页、浏览器扩展或插件沙盒（Figma、Obsidian
+等）里调用：
+
+- **允许任意 `Origin`，不使用 cookie。** 鉴权只靠 `X-Api-Key` 请求头，所以不要带
+  `credentials: "include"`。
+- 预检（`OPTIONS`）放行 `GET` 和 `POST`，并允许请求头 `x-api-key`、`content-type`、`accept`。
+  multipart 上传、JSON 请求体、`Accept: application/json` 信封和 `GET /v1.0/account` 都在范围内。
+- 前端可以通过 `resp.headers.get(...)` 读到这些响应头：`X-Credits-Charged`、`X-Width`、`X-Height`、
+  `X-Type`、`X-Foreground-Top` / `-Left` / `-Width` / `-Height`、`X-RateLimit-Limit` / `-Remaining` /
+  `-Reset` 和 `Retry-After`。
+- 错误响应（`400`、`402`、`403`、`429` 等）同样带 CORS 头，所以页面能读到 `errors[0].code`。
+
+```js
+// 浏览器端：`apiKey` 由用户提供（见下面的警告）；`file` 是 <input type="file"> 选出的 File。
+async function removeBackground(apiKey, file) {
+  const form = new FormData();
+  form.append("image_file", file);
+  form.append("size", "auto");
+
+  const resp = await fetch("https://api.pixmiller.com/v1.0/removebg", {
+    method: "POST",
+    headers: { "X-Api-Key": apiKey }, // 不要手动设置 Content-Type：浏览器会自动补上 multipart boundary
+    body: form,
+  });
+
+  if (!resp.ok) {
+    const body = await resp.json().catch(() => null); // 网关返回的 502/413 等可能不是 JSON
+    const e = body?.errors?.[0]; // 与 remove.bg 相同的错误信封
+    const retryAfter = resp.headers.get("Retry-After"); // 429 时读取
+    throw Object.assign(new Error(e?.title ?? `HTTP ${resp.status}`), { code: e?.code, retryAfter });
+  }
+
+  console.log("charged:", resp.headers.get("X-Credits-Charged")); // `0` 表示免费预览
+  return URL.createObjectURL(await resp.blob()); // 可直接作为 <img src>
+}
+```
+
+> [!WARNING]
+> **不要把 API Key 写进公开的前端代码。** 发到浏览器里的任何东西（网页、公开仓库里的前端 bundle）
+> 每个访问者都能读到，谁复制了这个 Key，谁就能花掉你的点数。请改用下面两种做法之一：
+>
+> - **走你自己的后端。** 浏览器调用你的服务器，由服务器用环境变量或密钥存储里的 Key 去调用
+>   PixMiller。任何公开的网站或应用都应该这样做。
+> - **让用户自带 Key（BYO-key）。** 用户把自己的 PixMiller Key 填进你的 Figma 插件、浏览器扩展或桌面插件，
+>   你把它保存在该工具的本地存储里。每个用户花的是自己的点数，你这边没有任何东西暴露。
 
 ## 点数与计费
 

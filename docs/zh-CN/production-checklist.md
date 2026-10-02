@@ -43,6 +43,8 @@ REMOVE_BG_API_KEY=<your PixMiller key>
 - [ ] **没有每月免费调用。** `free_calls` 始终为 `0`。预览免费，且不设额度。
 - [ ] **不渲染阴影和半透明。** 如果你依赖 `add_shadow` 处理汽车照片，需要自己加阴影。
 - [ ] **`X-Type` 只给粗分类**（`person`、`product`、`animal`、`car`、`other`）。
+- [ ] **要从浏览器端调用？** 可以（已开启 CORS，见[从浏览器调用](migration-guide.md#从浏览器调用)），但不要把
+      Key 发布在公开的前端代码里。请经你自己的后端转发，或让用户填自己的 Key。
 - [ ] **`402 insufficient_credits`：** 为它设置告警。同时根据 `GET /v1.0/account` 设置余额不足告警，
       避免付费任务卡住。
 

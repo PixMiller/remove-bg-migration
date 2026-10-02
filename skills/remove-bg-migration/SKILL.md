@@ -43,6 +43,7 @@ config, and no-code automations (Zapier, Make, n8n, Pipedream).
 | Kind | How to migrate |
 |---|---|
 | Hand-written HTTP (requests, fetch, axios, curl, Guzzle, net/http, …) | Change the base URL and the key, set `size` explicitly. |
+| Browser-side code (web page, extension, Figma/Obsidian plugin) | Same change; CORS is enabled. Check where the key comes from: see "Rules for the key" below. |
 | PyPI `removebg` | Override `removebg.removebg.API_ENDPOINT` at startup, or switch to plain HTTP. |
 | npm `remove.bg` | The endpoint is a hard-coded `const`. Replace it with a `fetch` call (preferred) or patch-package. |
 | `removebg-cli` | Three hard-coded URLs. Replace it with a curl or HTTP call in scripts. |
@@ -67,6 +68,11 @@ Rules for the key:
 - Never ask the user to paste the key into chat.
 - Never write the key into a file that is committed, and never print it.
 - Read the key from the environment in code.
+- **Browser-side code:** the key must never be hard-coded or bundled into public front-end code
+  (anyone can copy it and spend the user's credits). Route the call through the project's own
+  backend, or let each end user enter their own key (BYO-key, for example in a Figma plugin or
+  a browser extension). `api.pixmiller.com` allows browser calls (CORS), so no proxy is needed for BYO-key.
+  Details: [references/api-contract.md](references/api-contract.md#browser-calls-cors).
 
 ### 4. Change the code
 

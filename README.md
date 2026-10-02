@@ -70,6 +70,9 @@ Step-by-step guide: [docs/getting-started.md](docs/getting-started.md).
 - `X-Credits-Charged`, `X-Width`, `X-Height`, `X-Type`, `X-Foreground-*`, `X-RateLimit-*`.
 - `{"errors":[{"code","title"}]}`, with remove.bg's status codes and error codes.
 - `GET /v1.0/account` with `data.attributes.credits`.
+- Browser calls work (CORS is enabled, no cookies). Never put your key in public front-end
+  code: call through your own backend, or let users bring their own key. See
+  [Calling from a browser](docs/migration-guide.md#calling-from-a-browser).
 
 ## What is different
 

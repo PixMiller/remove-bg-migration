@@ -53,6 +53,21 @@ Invalid values return `400 invalid_parameter`. They are never ignored silently.
 | 429 | `rate_limit_exceeded`, honour `Retry-After` |
 | 502 | `result_fetch_failed` (nothing charged, retry) |
 
+## Browser calls (CORS)
+
+`/v1.0/*` and `/v1/*` can be called from a browser, extension or plugin sandbox:
+
+- any `Origin`, no cookies or credentials (auth is `X-Api-Key` only);
+- preflight allows `GET` and `POST`, and the headers `x-api-key`, `content-type`, `accept`;
+- readable response headers: `X-Credits-Charged`, `X-Width`, `X-Height`, `X-Type`,
+  `X-Foreground-Top/-Left/-Width/-Height`, `X-RateLimit-Limit/-Remaining/-Reset`, `Retry-After`;
+- error responses carry the CORS headers too, so `errors[0].code` is readable.
+
+**Key safety:** never put the key in public front-end code (web pages, front-end bundles in a
+public repository): anyone can copy it and spend the credits. Route calls through the project's
+own backend, or let the user bring their own key (Figma plugin, browser extension, desktop
+plugin). Example: [docs/migration-guide.md](https://github.com/PixMiller/remove-bg-migration/blob/main/docs/migration-guide.md#calling-from-a-browser).
+
 ## Account response
 
 ```json
